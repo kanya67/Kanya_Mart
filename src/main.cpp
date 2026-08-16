@@ -2,6 +2,13 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <mutex>
+#include <thread>
+#include <httplib.h>
+#include <bcrypt.h>
+
+#include "models/User.h"
+#include "controllers/AuthController.h"
 
 using namespace std;
 
@@ -23,31 +30,24 @@ vector<Product> products = {
     {6, "Party Wear Kurti", "Kurtis", 899}
 };
 
-// Demo users
-unordered_map<string, string> users = {
-    {"kanya725", "1234"},
-    {"admin", "admin123"}
-};
+// Users database
+unordered_map<string, User> users;
+mutex users_mutex;
 
 // Login function
 bool login(string username, string password) {
-
+    lock_guard<mutex> lock(users_mutex);
     if (users.find(username) != users.end()) {
-        if (users[username] == password) {
-            return true;
-        }
+        // Verify using bcrypt
+        return bcrypt_checkpw(password.c_str(), users[username].password_hash.c_str()) == 0;
     }
-
     return false;
 }
 
 // Display products
 void displayProducts() {
-
     cout << "\n========== KANYAMART PRODUCTS ==========\n";
-
     for (const auto& product : products) {
-
         cout << "\nID       : " << product.id;
         cout << "\nName     : " << product.name;
         cout << "\nCategory : " << product.category;
@@ -58,33 +58,58 @@ void displayProducts() {
 
 // Search products
 void searchProducts(string keyword) {
-
     bool found = false;
-
     cout << "\n========== SEARCH RESULTS ==========\n";
-
     for (const auto& product : products) {
-
         if (product.name.find(keyword) != string::npos ||
             product.category.find(keyword) != string::npos) {
-
             cout << "\n" << product.id
                  << " - " << product.name
                  << " - Rs." << product.price;
-
             found = true;
         }
     }
-
     if (!found) {
         cout << "\nNo products found.";
     }
-
     cout << endl;
+}
+
+// HTTP Server Thread Function
+void startHttpServer() {
+    httplib::Server svr;
+    
+    // Serve static files like login.html and js/auth.js
+    svr.set_mount_point("/", "./web");
+    
+    // Initialize routes
+    AuthController::initRoutes(svr);
+    
+    svr.listen("0.0.0.0", 8080);
 }
 
 // Main program
 int main() {
+    // Initialize default demo users using bcrypt hashing
+    {
+        lock_guard<mutex> lock(users_mutex);
+        char salt[BCRYPT_HASHSIZE];
+        char hash1[BCRYPT_HASHSIZE];
+        char hash2[BCRYPT_HASHSIZE];
+        
+        bcrypt_gensalt(12, salt);
+        bcrypt_hashpw("1234", salt, hash1);
+        
+        bcrypt_gensalt(12, salt);
+        bcrypt_hashpw("admin123", salt, hash2);
+        
+        users["kanya725"] = {"user-kanya", "kanya725", "kanya@kanyamart.com", hash1, "customer", "2026-08-16 12:00:00", "2026-08-16 12:00:00"};
+        users["admin"] = {"user-admin", "admin", "admin@kanyamart.com", hash2, "admin", "2026-08-16 12:00:00", "2026-08-16 12:00:00"};
+    }
+
+    // Start web server in the background
+    thread serverThread(startHttpServer);
+    serverThread.detach();
 
     string username;
     string password;
@@ -92,8 +117,9 @@ int main() {
     cout << "=====================================\n";
     cout << "              KANYAMART\n";
     cout << "=====================================\n";
+    cout << "[INFO] Web server running on port 8080. You can register via browser.\n\n";
 
-    cout << "\nUsername: ";
+    cout << "Username: ";
     cin >> username;
 
     cout << "Password: ";
@@ -101,7 +127,6 @@ int main() {
 
     // Login validation
     if (!login(username, password)) {
-
         cout << "\nInvalid username or password!\n";
         return 0;
     }
@@ -110,9 +135,7 @@ int main() {
     cout << "\nWelcome to KanyaMart!\n";
 
     int choice;
-
     do {
-
         cout << "\n\n========== MENU ==========\n";
         cout << "1. Display Products\n";
         cout << "2. Search Products\n";
@@ -122,29 +145,22 @@ int main() {
         cin >> choice;
 
         switch (choice) {
-
             case 1:
                 displayProducts();
                 break;
-
             case 2: {
                 string keyword;
-
                 cout << "Enter product/category: ";
                 cin >> keyword;
-
                 searchProducts(keyword);
                 break;
             }
-
             case 3:
                 cout << "\nLogged out successfully!\n";
                 break;
-
             default:
                 cout << "\nInvalid choice!";
         }
-
     } while (choice != 3);
 
     return 0;
