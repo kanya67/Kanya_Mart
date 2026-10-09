@@ -1,0 +1,6 @@
+{
+  "framework": null,
+  "buildCommand": "echo 'No build step required for static frontend'",
+  "installCommand": "echo 'No install step required'",
+  "outputDirectory": "web"
+}
