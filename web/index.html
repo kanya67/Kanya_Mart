@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="KanyaMart — The Future of Shopping. Discover products in a futuristic 3D digital marketplace.">
+    <title>KanyaMart — The Future of Shopping</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+</head>
+<body>
+    <!-- Three.js Canvas (Landing page background) -->
+    <canvas id="three-canvas" class="three-canvas"></canvas>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Navigation (hidden on landing) -->
+    <nav id="navbar" class="navbar hidden">
+        <div class="navbar-inner">
+            <div class="navbar-logo" onclick="App.navigate('/')">KanyaMart</div>
+            <ul class="navbar-nav" id="nav-links">
+                <li><span class="nav-link" data-page="shop" onclick="App.navigate('/shop')">🏪 Shop</span></li>
+                <li><span class="nav-link" data-page="cart" onclick="App.navigate('/cart')">
+                    <span class="nav-cart">🛒 Cart<span id="cart-count" class="nav-cart-count hidden">0</span></span>
+                </span></li>
+                <li><span class="nav-link" data-page="orders" onclick="App.navigate('/orders')">📦 Orders</span></li>
+                <li id="nav-seller" class="hidden"><span class="nav-link" data-page="seller" onclick="App.navigate('/seller/dashboard')">📊 Seller</span></li>
+                <li id="nav-user-info"><span class="nav-link" id="nav-username">👤</span></li>
+                <li><span class="nav-link" onclick="App.logout()">Logout</span></li>
+            </ul>
+            <div class="mobile-menu-btn" onclick="App.toggleMobileMenu()">☰</div>
+        </div>
+        <div id="mobile-nav" class="mobile-nav">
+            <span class="nav-link" onclick="App.navigate('/shop'); App.closeMobileMenu();">🏪 Shop</span>
+            <span class="nav-link" onclick="App.navigate('/cart'); App.closeMobileMenu();">🛒 Cart</span>
+            <span class="nav-link" onclick="App.navigate('/orders'); App.closeMobileMenu();">📦 Orders</span>
+            <span class="nav-link" id="mobile-seller-link" class="hidden" onclick="App.navigate('/seller/dashboard'); App.closeMobileMenu();">📊 Seller Dashboard</span>
+            <span class="nav-link" onclick="App.logout(); App.closeMobileMenu();">🚪 Logout</span>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="app-content"></main>
+
+    <!-- Footer (hidden on landing/auth) -->
+    <footer id="footer" class="footer hidden">
+        <div class="footer-inner">
+            <div class="footer-logo">KanyaMart</div>
+            <div class="footer-text">© 2026 KanyaMart. The Future of Shopping.</div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/components.js"></script>
+    <script src="/js/three-scene.js"></script>
+    <script src="/js/pages/landing.js"></script>
+    <script src="/js/pages/auth.js"></script>
+    <script src="/js/pages/shop.js"></script>
+    <script src="/js/pages/product.js"></script>
+    <script src="/js/pages/cart.js"></script>
+    <script src="/js/pages/checkout.js"></script>
+    <script src="/js/pages/orders.js"></script>
+    <script src="/js/pages/order-detail.js"></script>
+    <script src="/js/pages/seller/dashboard.js"></script>
+    <script src="/js/pages/seller/products.js"></script>
+    <script src="/js/pages/seller/orders.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>

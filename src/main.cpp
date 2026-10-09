@@ -1,167 +1,52 @@
+#include <drogon/drogon.h>
 #include <iostream>
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <mutex>
-#include <thread>
-#include <httplib.h>
-#include <bcrypt.h>
 
-#include "models/User.h"
-#include "controllers/AuthController.h"
+using namespace drogon;
 
-using namespace std;
-
-// Product structure
-struct Product {
-    int id;
-    string name;
-    string category;
-    double price;
-};
-
-// Demo product list
-vector<Product> products = {
-    {1, "Floral Kurti", "Kurtis", 799},
-    {2, "Silk Saree", "Sarees", 1499},
-    {3, "Makeup Kit", "Makeup", 999},
-    {4, "Gaming Laptop", "Laptops", 55999},
-    {5, "Smartphone", "Mobiles", 18999},
-    {6, "Party Wear Kurti", "Kurtis", 899}
-};
-
-// Users database
-unordered_map<string, User> users;
-mutex users_mutex;
-
-// Login function
-bool login(string username, string password) {
-    lock_guard<mutex> lock(users_mutex);
-    if (users.find(username) != users.end()) {
-        // Verify using bcrypt
-        return bcrypt_checkpw(password.c_str(), users[username].password_hash.c_str()) == 0;
-    }
-    return false;
-}
-
-// Display products
-void displayProducts() {
-    cout << "\n========== KANYAMART PRODUCTS ==========\n";
-    for (const auto& product : products) {
-        cout << "\nID       : " << product.id;
-        cout << "\nName     : " << product.name;
-        cout << "\nCategory : " << product.category;
-        cout << "\nPrice    : Rs." << product.price;
-        cout << "\n---------------------------------------------";
-    }
-}
-
-// Search products
-void searchProducts(string keyword) {
-    bool found = false;
-    cout << "\n========== SEARCH RESULTS ==========\n";
-    for (const auto& product : products) {
-        if (product.name.find(keyword) != string::npos ||
-            product.category.find(keyword) != string::npos) {
-            cout << "\n" << product.id
-                 << " - " << product.name
-                 << " - Rs." << product.price;
-            found = true;
-        }
-    }
-    if (!found) {
-        cout << "\nNo products found.";
-    }
-    cout << endl;
-}
-
-// HTTP Server Thread Function
-void startHttpServer() {
-    httplib::Server svr;
-    
-    // Serve static files like login.html and js/auth.js
-    svr.set_mount_point("/", "./web");
-    
-    // Initialize routes
-    AuthController::initRoutes(svr);
-    
-    svr.listen("0.0.0.0", 8080);
-}
-
-// Main program
 int main() {
-    // Initialize default demo users using bcrypt hashing
-    {
-        lock_guard<mutex> lock(users_mutex);
-        char salt[BCRYPT_HASHSIZE];
-        char hash1[BCRYPT_HASHSIZE];
-        char hash2[BCRYPT_HASHSIZE];
-        
-        bcrypt_gensalt(12, salt);
-        bcrypt_hashpw("1234", salt, hash1);
-        
-        bcrypt_gensalt(12, salt);
-        bcrypt_hashpw("admin123", salt, hash2);
-        
-        users["kanya725"] = {"user-kanya", "kanya725", "kanya@kanyamart.com", hash1, "customer", "2026-08-16 12:00:00", "2026-08-16 12:00:00"};
-        users["admin"] = {"user-admin", "admin", "admin@kanyamart.com", hash2, "admin", "2026-08-16 12:00:00", "2026-08-16 12:00:00"};
-    }
+    std::cout << "=====================================" << std::endl;
+    std::cout << "           KANYAMART SERVER           " << std::endl;
+    std::cout << "=====================================" << std::endl;
 
-    // Start web server in the background
-    thread serverThread(startHttpServer);
-    serverThread.detach();
+    // Load configuration
+    app().loadConfigFile("./config.json");
 
-    string username;
-    string password;
-
-    cout << "=====================================\n";
-    cout << "              KANYAMART\n";
-    cout << "=====================================\n";
-    cout << "[INFO] Web server running on port 8080. You can register via browser.\n\n";
-
-    cout << "Username: ";
-    cin >> username;
-
-    cout << "Password: ";
-    cin >> password;
-
-    // Login validation
-    if (!login(username, password)) {
-        cout << "\nInvalid username or password!\n";
-        return 0;
-    }
-
-    cout << "\nLogin successful!";
-    cout << "\nWelcome to KanyaMart!\n";
-
-    int choice;
-    do {
-        cout << "\n\n========== MENU ==========\n";
-        cout << "1. Display Products\n";
-        cout << "2. Search Products\n";
-        cout << "3. Logout\n";
-        cout << "Enter your choice: ";
-
-        cin >> choice;
-
-        switch (choice) {
-            case 1:
-                displayProducts();
-                break;
-            case 2: {
-                string keyword;
-                cout << "Enter product/category: ";
-                cin >> keyword;
-                searchProducts(keyword);
-                break;
+    // CORS filter for API requests
+    app().registerPreHandlingAdvice(
+        [](const HttpRequestPtr &req, AdviceCallback &&acb, AdviceChainCallback &&accb) {
+            // Handle CORS preflight
+            if (req->method() == Options) {
+                auto resp = HttpResponse::newHttpResponse();
+                resp->addHeader("Access-Control-Allow-Origin", req->getHeader("Origin").empty() ? "*" : req->getHeader("Origin"));
+                resp->addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+                resp->addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+                resp->addHeader("Access-Control-Allow-Credentials", "true");
+                resp->addHeader("Access-Control-Max-Age", "86400");
+                resp->setStatusCode(k204NoContent);
+                acb(resp);
+                return;
             }
-            case 3:
-                cout << "\nLogged out successfully!\n";
-                break;
-            default:
-                cout << "\nInvalid choice!";
+            accb();
         }
-    } while (choice != 3);
+    );
 
+    // Add CORS headers to all responses
+    app().registerPostHandlingAdvice(
+        [](const HttpRequestPtr &req, const HttpResponsePtr &resp) {
+            resp->addHeader("Access-Control-Allow-Origin", req->getHeader("Origin").empty() ? "*" : req->getHeader("Origin"));
+            resp->addHeader("Access-Control-Allow-Credentials", "true");
+        }
+    );
+
+    // Fallback for SPA routing - serve index.html for unknown routes
+    app().setCustom404Page(
+        HttpResponse::newFileResponse("./web/index.html", "", drogon::CT_TEXT_HTML)
+    );
+
+    std::cout << "[INFO] Starting KanyaMart on port 8080..." << std::endl;
+    std::cout << "[INFO] Frontend: http://localhost:8080" << std::endl;
+    std::cout << "[INFO] API Base: http://localhost:8080/api/v1" << std::endl;
+
+    app().run();
     return 0;
 }

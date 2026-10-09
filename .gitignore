@@ -1,4 +1,28 @@
+# Build
 build/
 .cache/
 *.o
 kanyamart
+compile_commands.json
+
+# Environment
+.env
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+
+# Temporary
+*.tmp
+*.bak

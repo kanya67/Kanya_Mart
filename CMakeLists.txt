@@ -5,41 +5,45 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Fetch Drogon and its dependencies
 include(FetchContent)
 
-# Fetch cpp-httplib
 FetchContent_Declare(
-    httplib
-    GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
-    GIT_TAG v0.15.3
+    Drogon
+    GIT_REPOSITORY https://github.com/drogonframework/drogon
+    GIT_TAG v1.9.3
 )
-FetchContent_MakeAvailable(httplib)
+FetchContent_MakeAvailable(Drogon)
 
-# Fetch nlohmann_json
-FetchContent_Declare(
-    json
-    GIT_REPOSITORY https://github.com/nlohmann/json.git
-    GIT_TAG v3.11.3
-)
-FetchContent_MakeAvailable(json)
+# Add local bcrypt directory
+add_subdirectory(third_party/Bcrypt.cpp)
 
-# Fetch a bcrypt implementation
-FetchContent_Declare(
-    bcrypt
-    GIT_REPOSITORY https://github.com/hilch/Bcrypt.cpp.git
-    GIT_TAG main
-)
-FetchContent_MakeAvailable(bcrypt)
-
-# Setup our executable
-add_executable(kanyamart 
-    src/main.cpp 
-    src/controllers/AuthController.cpp 
+# Source files
+set(SOURCES
+    src/main.cpp
+    src/controllers/AuthController.cpp
+    src/controllers/ProductController.cpp
+    src/controllers/CartController.cpp
+    src/controllers/OrderController.cpp
+    src/controllers/SellerController.cpp
+    src/controllers/ReviewController.cpp
+    src/controllers/HealthController.cpp
     src/services/AuthService.cpp
+    src/services/ProductService.cpp
+    src/services/CartService.cpp
+    src/services/OrderService.cpp
+    src/services/SellerService.cpp
+    src/services/ReviewService.cpp
 )
+
+# Setup executable
+add_executable(kanyamart ${SOURCES})
 
 target_include_directories(kanyamart PRIVATE include)
 
 # Link libraries
-find_package(Threads REQUIRED)
-target_link_libraries(kanyamart PRIVATE httplib json::json bcrypt Threads::Threads)
+target_link_libraries(kanyamart PRIVATE drogon bcrypt)
+
+# Copy config.json and web directory to build output
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/config.json DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/web DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
