@@ -105,6 +105,8 @@ void AuthController::loginUser(const HttpRequestPtr &req,
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             cookie.setMaxAge(86400); // 24 hours
+            cookie.setSameSite(Cookie::SameSite::kNone);
+            cookie.setSecure(true);
             resp->addCookie(cookie);
             // Remove session_id from response body
             result["data"].removeMember("session_id");
@@ -136,6 +138,8 @@ void AuthController::logoutUser(const HttpRequestPtr &req,
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
+        cookie.setSameSite(Cookie::SameSite::kNone);
+        cookie.setSecure(true);
         resp->addCookie(cookie);
         (*cb)(resp);
     });

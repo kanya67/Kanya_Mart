@@ -13,7 +13,7 @@ const API = {
                 'Content-Type': 'application/json',
                 'Bypass-Tunnel-Reminder': 'true'
             },
-            credentials: 'omit' // omit since cross-origin without proper setup might block cookies, or keep 'include' if CORS allows it
+            credentials: 'include'
         };
         if (body) opts.body = JSON.stringify(body);
 
