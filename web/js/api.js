@@ -4,7 +4,7 @@
    ============================================================ */
 
 const API = {
-    BASE: 'https://chubby-pots-greet.loca.lt/api/v1',
+    BASE: 'https://kanya-mart-api-v2.loca.lt/api/v1',
 
     async request(method, path, body = null) {
         const opts = {
