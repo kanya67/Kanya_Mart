@@ -26,7 +26,7 @@ trap "kill $BACKEND_PID; echo 'Server stopped.'; exit" INT TERM
 # We request the exact same subdomain so Vercel doesn't break!
 echo "Starting localtunnel loop..."
 while true; do
-    npx localtunnel --port 8080 --subdomain faaliha-mart-api
+    npx localtunnel --port 8080 --subdomain faalihamart-secure-api
     echo "Localtunnel disconnected. Reconnecting in 3 seconds..."
     sleep 3
 done
