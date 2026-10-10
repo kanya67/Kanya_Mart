@@ -53,7 +53,7 @@ const ProductPage = {
                     </div>
                     <div class="price">₹${Number(p.price).toLocaleString('en-IN')}</div>
                     <p class="description">${p.description || 'No description available.'}</p>
-                    <div class="meta-row"><span class="label">Seller</span><span>${p.seller_name || 'KanyaMart'}</span></div>
+                    <div class="meta-row"><span class="label">Seller</span><span>${p.seller_name || 'FaalihaMart'}</span></div>
                     <div class="meta-row"><span class="label">Availability</span><span class="product-card-stock ${stockClass}">${stockText}</span></div>
                     ${p.stock > 0 ? `
                     <div class="meta-row">

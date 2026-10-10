@@ -86,7 +86,7 @@ const Components = {
             </div>
             <div class="product-card-body">
                 <div class="product-card-name">${product.name}</div>
-                <div class="product-card-seller">by ${product.seller_name || 'KanyaMart'}</div>
+                <div class="product-card-seller">by ${product.seller_name || 'FaalihaMart'}</div>
                 <div class="product-card-rating">
                     ${this.ratingStars(rating)}
                     <span class="count">${rating} (${reviewCount})</span>

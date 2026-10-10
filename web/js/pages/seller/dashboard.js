@@ -55,7 +55,7 @@ const SellerDashboardPage = {
             <div class="glass-card animate-fade-in-up stagger-2" style="padding:var(--space-xl);text-align:center">
                 <div style="font-size:48px;opacity:0.5;margin-bottom:var(--space-md)">🚀</div>
                 <h3 style="font-family:var(--font-heading);margin-bottom:var(--space-sm)">Grow Your Business</h3>
-                <p style="color:var(--text-secondary);max-width:500px;margin:0 auto var(--space-lg)">KanyaMart provides the tools you need to reach more customers and manage your store efficiently.</p>
+                <p style="color:var(--text-secondary);max-width:500px;margin:0 auto var(--space-lg)">FaalihaMart provides the tools you need to reach more customers and manage your store efficiently.</p>
                 <button class="btn btn-primary" onclick="App.navigate('/seller/products')">+ Add New Product</button>
             </div>
         `;

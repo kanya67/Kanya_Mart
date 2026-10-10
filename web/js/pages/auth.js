@@ -7,7 +7,7 @@ const AuthPage = {
         <div class="auth-page">
             <div class="auth-container animate-fade-in">
                 <div class="auth-visual">
-                    <div class="auth-visual-logo">KanyaMart</div>
+                    <div class="auth-visual-logo">FaalihaMart</div>
                     <p class="auth-visual-text">Welcome back! Sign in to access your personalized marketplace experience.</p>
                 </div>
                 <div class="auth-form-container">
@@ -41,7 +41,7 @@ const AuthPage = {
         <div class="auth-page">
             <div class="auth-container animate-fade-in">
                 <div class="auth-visual">
-                    <div class="auth-visual-logo">KanyaMart</div>
+                    <div class="auth-visual-logo">FaalihaMart</div>
                     <p class="auth-visual-text">Join the future of shopping. Create your account and start exploring.</p>
                 </div>
                 <div class="auth-form-container">

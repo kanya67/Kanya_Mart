@@ -9,7 +9,7 @@ const LandingPage = {
             <div class="landing-hero">
                 <div class="landing-hero-content">
                     <div class="landing-subtitle">✦ THE FUTURE OF SHOPPING ✦</div>
-                    <h1 class="landing-title">KanyaMart</h1>
+                    <h1 class="landing-title">FaalihaMart</h1>
                     <p class="landing-description">
                         Discover products in a smarter, more immersive marketplace. 
                         Experience shopping reimagined with cutting-edge technology.
