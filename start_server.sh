@@ -20,9 +20,13 @@ echo "[2/2] Starting LocalTunnel to connect to Vercel..."
 echo "Your Vercel site should automatically connect to this tunnel."
 echo "Press Ctrl+C to stop the server."
 
-# We request the exact same subdomain so Vercel doesn't break!
-npx localtunnel --port 8080 --subdomain kanya-mart-api-v2
+# Trap Ctrl+C to stop the loop and kill the backend
+trap "kill $BACKEND_PID; echo 'Server stopped.'; exit" INT TERM
 
-# When user presses Ctrl+C and kills localtunnel, kill the backend too
-kill $BACKEND_PID
-echo "Server stopped."
+# We request the exact same subdomain so Vercel doesn't break!
+echo "Starting localtunnel loop..."
+while true; do
+    npx localtunnel --port 8080 --subdomain faaliha-mart-api
+    echo "Localtunnel disconnected. Reconnecting in 3 seconds..."
+    sleep 3
+done
